@@ -1,0 +1,65 @@
+The codes are for playing with data using ipython.
+All the examples bellow are meant to be run in a ipython session that is
+started at this directory.
+
+An easy way to use ipython for this is to start it with
+
+$ ipython qtconsole --pylab
+
+logdata.py
+	contains the class APlogData. APlogData parses a logfile and stores
+	the data as dict:
+
+	  from logdata import APlogData
+	  data = APlogData()
+	  data.parse(open("example_log/20131219-162308-01.log"))
+
+	The data are stored as 3 level dict:  data[GROUP][PARAMETER][]
+	For examples, the altitude from the GPS are stored in
+	  data['GPS'][Alt']
+	which is a list of altitude.
+	To list all groups:
+		data.keys()
+	To list all parameters in GPS groups:
+		data.['GPS'].keys()
+	To retrieve the first 20 waypoint Altitude
+		data['GPS']['Alt'][:20]
+
+apmlogplotlib.py
+	Contains class APMlogPlotter that plots the data in an instance of
+	class APlogData (above). Once the plotter is created with
+
+	  from apmlogplotlib import APMlogPlotter
+	  plotter = APMlogPlotter(data)
+
+	it can be used to plot any parameter by specifying "GROUP.Parameter'.
+	For examples, to plot the altitude:
+
+	  plotter.add_plot('GPS.Alt')   # plotting data['GPS']['Alt']
+
+	If the parameter is unique among the groups, the group can be ommited:
+
+	  plotter.add_plot('Alt')   # plotting data['GPS']['Alt']
+
+	More graphs can be added in on fly which can be plotted on the same
+	axes or different axes. There are many ways of plotting provided by
+	the class. They are better explained by examples in utils.py
+
+utils.py
+	The file contains many canned plotting functions to process data and
+	plot them in suitable ways. The plotting functions take a log file
+	name, plot the required data and then return the plotter (see above)
+	for adding more graphs or changing the existing ones.
+	For example, to plot roll and pitch data:
+
+	  import utils
+	  p = utils.plot_roll_pitch('example_log/20131102-120622-38.log')
+
+	To see how the altitude is affected by roll/pitch, add Alt graph
+
+	  p.add_plot('Alt')
+
+	Notes: some functions require special parameters (e.g. AccX, AccY...)
+	which are not always enabled (therefore not existed in the log file).
+	In that case, exceptions will be thrown.
+	
